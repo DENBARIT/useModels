@@ -90,12 +90,29 @@ align-self: end;
 display: inline-block;
 }
 
-
+.error{
+  color: #eb1a1a; 
+  font-size: 1.4rem;
+  text-align: center;
+  margin-top: 5rem;
+}
+.spinner {
+flex-shrink: 0; 
+  display: block;
+  border: 4px solid rgba(255, 255, 255, 0.1);
+  border-top: 4px solid var(--primary-color);
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  animation: spin 2s linear infinite;
+  margin: 5rem auto;
+}
 .main{
   margin-top: 2.4rem;
-height:calc(100vh-7.2rem-3*2.4rem);
+height:calc(100vh-7.2rem- 3*2.4rem);
 display: flex;
 justify-content: center;
+gap:1.2rem;
 }
 .box{
   width:45rem;
@@ -105,8 +122,57 @@ border-radius: 1.2rem;
 overflow-x: hidden;
 position:relative;
 overflow-y: auto;
+/* height:100%;
+flex */
+flex:1;
 }
-
+.list{
+  list-style: none;
+padding: 0.8rem 0;
+overflow: auto;
+}
+.list.modellist li{
+cursor: pointer;
+transition: all 0.2s ease;
+} 
+.found-results{
+  justify-self: end;
+  font-size: 1.4rem;
+}
+.list li{
+  position:relative;
+  display:grid;
+grid-template-columns: 5rem 1fr;
+column-gap: 1.2rem;
+grid-template-rows: auto auto;
+align-items: center;
+padding: 1.2rem 2.4rem;
+  border-bottom: 1px solid #1e293b;
+}
+.model-avatar{
+  width: 4.8rem;
+  height: 4.8rem;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.4rem;
+  color: var(--text-main);
+  margin-right: 1.2rem;
+  grid-row:1/-1;
+}
+.model-info
+{
+  display: flex;
+  grid-template-rows:auto auto;
+  gap:1rem;
+}
+.model-stats{
+  display: flex;
+  gap:1rem;
+  /* font-size: 1.4rem; */
+  color: var(--text-muted);
+}
 @keyframes clickBlink {
  /* scale(0.85); Shrinks inward rapidly (the 'click' down) */
   0% {
@@ -117,5 +183,13 @@ overflow-y: auto;
   }
   100% {
     transform: scale(1.1);  /* Pops out slightly larger on release */
+  }
+}
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
   }
 }

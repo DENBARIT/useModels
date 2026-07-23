@@ -53,58 +53,68 @@ export default function App() {
   const [selectedId, setSelectedId] = useState(null);
    const [debouncedQuery, setDebouncedQuery] = useState("");
    const [isLoading, setIsLoading] = useState(false);
+   const [error, setError] = useState("");
    useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedQuery(query);
     }, 500);
 
-    return () => clearTimeout(handler); // Clears timer if user types another letter immediately
+    return () => clearTimeout(handler); 
   }, [query]);
    useEffect(function(){
  const controller = new AbortController();
 async function fetchModels(){
  try{
   setIsLoading(true);
-  const proxyUrl = "https://herokuapp.com";
-const url=debouncedQuery.length>2?`https://huggingface.co/${debouncedQuery}`:`https://huggingface.co`;
+  setError("");
+  const url=debouncedQuery.length>2
+    ?`https://huggingface.co/api/models?search=${encodeURIComponent(debouncedQuery)}&limit=10`
+    :`https://huggingface.co/api/models?limit=10`;
 
-const response = await fetch(url+proxyUrl,
+const response = await fetch(url,
   {signal: controller.signal,
     method: 'GET',
     headers:{
-      Authorization: `Bearer ${process.env.REACT_APP_HUGGINGFACE_API_KEY}`,
-      "Content-Type": "application/json"
+      Authorization: `Bearer ${process.env.REACT_APP_HUGGINGFACE_API_KEY}`
     }
   }
 );
+if(!response.ok){
+  throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}`);
+}
 const data = await response.json();
-console.log(data);
+if (data.length===0){setModels([]); 
+  throw new Error("Model not found");}
+console.log("Fetched models:", data);
+setModels(data);
  }catch(err){
 if(err.name === 'AbortError'){
   console.log('Fetch aborted');
+}else{
+  setError(err.message);
 }
+ }finally{
+  setIsLoading(false);
  }
-
-
-
-
 }fetchModels();
 
+return () => controller.abort();
   },[debouncedQuery])
   return <div>
     <Navbar >
     <Search query={query} setQuery={setQuery} />
     <FoundResults/>
+   
     </Navbar>
     <Main>
       <Box>
-        <Modellist />
-
+       {isLoading? <Loader /> : <Modellist models={models} />}
+       {error && <p className="error">🚨{error}</p>}
+<Modellist models={models} />
       </Box>
       <Box>
-        <ModelDetials />
+<ModelDetials />
         <ModelSummary />
-
       </Box>
     </Main>
 
@@ -169,10 +179,17 @@ function Search({query,setQuery}){
   return <input className="search" type="text" placeholder={placeholder} value={query} onChange={(e) => setQuery(e.target.value)} />
 }
 function FoundResults(){
-  return <p>Found X results</p>
+  return <p className="found-results">Found X results</p>
 
 }
 
+function Loader(){
+return <div>  
+<div className="spinner"></div>
+  
+  </div>
+
+}
 function Main({children}){
   return <div className="main">
     {children}
@@ -185,20 +202,56 @@ function Box({children}){
 
   </div>
 }
-function Modellist({MockModels=MOCK_MODELS}){
-  return <div className="modellist">
-<ul>
-  {MockModels.map(model => (
+function Modellist({models}){
+  return <ul  className="list modellist">
+  {models.map(model => (
   <Model key={model.id} model={model} />
   ))}
 </ul>
-  </div>
+
 }
+
+
 function Model({model}){
-return <li>
+     const [author, modelName] = model.id.includes("/") 
+    ? model.id.split("/") 
+    : ["Unknown", model.id];
+ 
+  const boxColor = stringToColor(modelName);
   
-</li>
+  
+  const firstLetter = modelName ? modelName.charAt(0).toUpperCase() : "🤖";
+  return <li>
+    <div className="model-avatar" style={{ backgroundColor: boxColor }}>{firstLetter}</div>
+    <h3 className="model-name">{modelName||model.id}</h3>
+        <div className="model-info">
+        <h3 className="model-author">by {author||"Anonymous"}</h3>
+     <div className="model-stats">
+          {model.pipeline_tag && (
+            <span>🏷️ {model.pipeline_tag}</span>
+          )}
+          {model.library_name && (
+            <span >📦 {model.library_name}</span>
+          )}
+          <span >📥 {model.downloads.toLocaleString()}</span>
+        </div>
+  
+  </div>
+  </li>
+
 }
+
+function stringToColor(str) {
+  if (!str) return "var(--primary-color, #7289da)";
+  let hash = 0;
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  // Keep the colors in a bright, modern saturation/lightness range
+  const h = Math.abs(hash) % 360;
+  return `hsl(${h}, 65%, 45%)`; 
+}
+
 function ModelDetials(){
 
 }
