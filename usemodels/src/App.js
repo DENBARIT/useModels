@@ -57,12 +57,17 @@ export default function App() {
    const [isLoading, setIsLoading] = useState(false);
    const [error, setError] = useState("");
    const [favourite, setFavourite] = useState([]);
+    const [isOpen, setIsOpen] = useState(false);
   function handleSelectModel(id){
-    id===selectedId ? setSelectedId(null):setSelectedId(id) ;
-
+    if(id===selectedId){
+      setIsOpen((open) => !open);
+    }else{
+      setSelectedId(id);
+      setIsOpen(true);
+    }
   }
-  function handleFavourite(model){
-  setFavourite((model) => [...model, model]);
+  function handleFavourite(newModel){
+  setFavourite((prev) => [...prev, newModel]);
   }
   console.log("Favourite models:", favourite);
   
@@ -128,12 +133,17 @@ return () => controller.abort();
 <Modellist models={models} onSelect={handleSelectModel} selectedId={selectedId} onClose={handleClose} />
       </Box>
       <Box>
-{selectedId ? <ModelDetials  selectedId={selectedId}  favourite={favourite} setFavourite={handleFavourite} onClose={handleClose} />
-        :<ModelSummary  favourite={favourite} />}
+{selectedId&&isOpen ? <ModelDetials  selectedId={selectedId}  favourite={favourite} setFavourite={handleFavourite} onClose={handleClose} isOpen={isOpen} setIsOpen={setIsOpen}/>
+        :
+        <>
+        <ModelSummaryBox favourite={favourite} />
+        <ModelSummary  favourite={favourite} />
+        </>
+        }
       </Box>
     </Main>
 
-  </div>
+  </div>  
 }
 function Navbar({children}) {
   return <div className="navbar">
@@ -224,7 +234,7 @@ function ListedBoxButton({ isOpen, setIsOpen }) {
     </button>
   );
 }
-function Modellist({models,onSelect,selectedId,onClose}){
+function Modellist({models,onSelect,selectedId,onClose}) {
   return <ul  className="list modellist">
   {models.map(model => (
   <Model key={model.id} model={model} onSelect={onSelect} selectedId={selectedId} onClose={onClose} />
@@ -234,7 +244,7 @@ function Modellist({models,onSelect,selectedId,onClose}){
 }
 
 
-function Model({model,onSelect,selectedId,onClose}){
+function Model({model,onSelect,selectedId,onClose}) {
      const [author, modelName] = model.id.includes("/") 
     ? model.id.split("/") 
     : ["Unknown", model.id];
@@ -249,7 +259,7 @@ return function(){
 }
  },[modelName
  ]); 
- return <li onClick={()=>onSelect(model.id)} className={`model-item ${selectedId === model.id ? "selected" : ""}`}>
+ return <li onClick={()=>onSelect(model.id)}  className={`model-item ${selectedId === model.id ? "selected" : ""}`}>
     <div className="model-avatar" style={{ backgroundColor: boxColor }}>{firstLetter}</div>
     <h3 className="model-name">{modelName||model.id}</h3>
         <div className="model-info">
@@ -280,10 +290,10 @@ function stringToColor(str) {
 
 }
 
-function ModelDetials({selectedId,favourite,setFavourite,onClose}){
+function ModelDetials({selectedId,favourite,setFavourite,onClose,isOpen,setIsOpen}){
   const [models,setModels] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-   const [isOpen, setIsOpen] = useState(true);
+  
 const [rating, setRating] = useState(0);
 const [isFavorite, setIsFavorite] = useState(false);
 
@@ -329,14 +339,16 @@ const [author, modelName] = modelData?.id.includes("/") ? modelData.id.split("/"
   const formattedDate = modelData.createdAt 
     ? new Date(modelData.createdAt).toLocaleDateString() : "Unknown";
 function AddToFavorites() {
-const newFavorite = { 
+const newFavorite = {
   id: selectedId,
   rating: rating,
-firstLetter,
-  modelName,
+  createdAt: modelData.createdAt,
+  modelName: modelName,
   author,
+  firstLetter,
   boxColor,
-  formattedDate
+  formattedDate,
+  likes: modelData.likes || 0
 };
 setFavourite(newFavorite);
 onClose(selectedId);
@@ -421,16 +433,28 @@ return <div>
       
 
 }
+function ModelSummaryBox({favourite}){
+  const numberOfFavorites = favourite.length;
+  const mostlikedModel = favourite.reduce((max, model) => (model.likes > max.likes ? model : max), { likes: 0 });
+  return <div className="model-summary-box">
+    <h3>📊 Model Summary</h3>
+    <p>Total Favourites: <span className="summary-highlight">{numberOfFavorites}</span></p>
+    {numberOfFavorites > 0 && (
+      <p>Most Liked: <span className="summary-highlight">{mostlikedModel.modelName}</span> by {mostlikedModel.author} with {mostlikedModel.likes.toLocaleString()} ❤️</p>
+    )}
+  </div>;
 
+
+}
 function ModelSummary({favourite}){
-  const [isOpen, setIsOpen] = useState(true);
   return <div className="model-summary">
-  <ListedBoxButton isOpen={isOpen} setIsOpen={setIsOpen} />
 
-   
+<span className="logo-emoji summary-emoji">🤖</span>
+  
       <h2>Welcome to useModels</h2>
-  { isOpen &&   
-    favourite.length > 0 && (
+      <p className="summary-tagline">Search for models above and click one to view its details.</p>
+  {  (
+    favourite.length > 0 ? (
       <div className="favourite-section">
         <h3>⭐ Favourite Models</h3>
         <ul className="favourite-list">
@@ -442,14 +466,17 @@ function ModelSummary({favourite}){
               <div>
                 <h4>{model.modelName}</h4>
                 <span className="author-tag">By {model.author}</span>
-                <span className="rating-tag">Rating: {model.rating}/10</span>
+                <span className="rating-tag">★ {model.rating}/10</span>
               </div>
             </li>
           ))}
         </ul>
       </div>
-    ) }
+    ) : (
+      <p className="summary-hint">✨ No favourites yet — add one from a model's details page.</p>
+    )
+  ) }
 
-  </div>; 
+  </div>;
   
 }
