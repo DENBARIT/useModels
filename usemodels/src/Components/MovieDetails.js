@@ -33,6 +33,8 @@ catch(error){
   if(error.name==="AbortError")return;
   console.error("Error fetching model details:", error);
   setIsLoading(false);
+}finally {
+    setIsLoading(false);
 }
 }
 fetchModels();

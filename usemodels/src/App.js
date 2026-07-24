@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import { useRef } from 'react';
 import {useLocalStorageState} from './CustomHooks/useLocalStorage';
 import logo from "./assets/logo.svg";
 import { FaGithub, FaLinkedin } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
-import { useKey } from './CustomHooks/useKey';
 import LandingScreen from './Components/LandingScreen';
 import Search from './Components/Search';
 import ModelDetials from './Components/MovieDetails';
+import Loader from './Components/Loader';
 import { stringToColor } from './utils/stringToColor';
 export default function App() {
   const [showLanding, setShowLanding] = useState(true);
@@ -94,7 +93,7 @@ return () => controller.abort();
     <Main>
       <Box>
        {error && <p className="error">🚨{error}</p>}
-<Modellist models={models} onSelect={handleSelectModel} selectedId={selectedId} onClose={handleClose} />
+       {isLoading ? <Loader /> : <Modellist models={models} onSelect={handleSelectModel} selectedId={selectedId} onClose={handleClose} />}
       </Box>
       <Box>
 {selectedId&&isOpen ? <ModelDetials  selectedId={selectedId}  favourite={favourite} setFavourite={handleFavourite} onClose={handleClose} isOpen={isOpen} setIsOpen={setIsOpen}/>
@@ -171,7 +170,7 @@ function Model({model,onSelect,selectedId,onClose}) {
           {model.library_name && (
             <span className="stat-pill">📦 {model.library_name}</span>
           )}
-          <span className="stat-count">📥 {model.downloads.toLocaleString()}</span>
+          <span className="stat-count">📥 {model.downloads?.toLocaleString() || 0}</span>
         </div>
   
   </div>

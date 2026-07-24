@@ -1,19 +1,20 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useKey } from "../CustomHooks/useKey";
 
+const placeholders = [
+  "Search for Llama-3",
+  "Try 'Inception vibes'",
+  "Search 'Sci-Fi summarizer'",
+  "Try 'Whisper audio tracker'"
+];
+
 export default function Search({query,setQuery,onClose}){
-  
+
    const [placeholder, setPlaceholder] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
   const [typingSpeed, setTypingSpeed] = useState(150);
   const inputEl=useRef(null);
-  const placeholders = [
-    "Search for Llama-3",
-    "Try 'Inception vibes'",
-    "Search 'Sci-Fi summarizer'",
-    "Try 'Whisper audio tracker'"
-  ];
   useKey("escape",onClose);
 
  useEffect(() => {
