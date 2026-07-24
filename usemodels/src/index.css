@@ -378,6 +378,20 @@ padding: 1.2rem 2.4rem 1.2rem 2.1rem;
 .btn-favorite.is-favorite:hover{
   box-shadow: 0 6px 16px rgba(245, 158, 11, 0.5);
 }
+.already-favorite{
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: #fbbf24;
+  background: rgba(245, 158, 11, 0.12);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  padding: 0.9rem 1.8rem;
+  border-radius: 999px;
+  animation: popIn 0.25s ease;
+}
 
 .model-summary-box{
   margin: 1.6rem 1.6rem 0;
@@ -462,7 +476,8 @@ padding: 1.2rem 2.4rem 1.2rem 2.1rem;
   gap: 1rem;
 }
 .favourite-item{
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
   gap: 1.2rem;
   padding: 1rem 1.4rem;
@@ -475,16 +490,39 @@ padding: 1.2rem 2.4rem 1.2rem 2.1rem;
   background-color: rgba(99, 102, 241, 0.12);
   transform: translateY(-2px);
 }
+.favourite-item-info{
+  min-width: 0;
+}
+.favourite-item-link{
+  flex-shrink: 0;
+  line-height: 1;
+}
+.favourite-item-link a{
+  display: block;
+  filter: grayscale(1);
+  opacity: 0.7;
+  transition: opacity 0.2s ease, filter 0.2s ease;
+}
+.favourite-item-link a:hover{
+  filter: none;
+  opacity: 1;
+}
 .favourite-item h4{
   font-family: 'Quicksand', sans-serif;
   font-weight: 700;
   font-size: 1.5rem;
   color: var(--text-main);
   text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .favourite-item .author-tag{
   display: block;
   margin-top: 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .favourite-item .rating-tag{
   display: inline-block;
@@ -497,8 +535,11 @@ padding: 1.2rem 2.4rem 1.2rem 2.1rem;
   border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: 999px;
   padding: 0.15rem 0.8rem;
+  white-space: nowrap;
 }
-
+.file-link{
+  line-height: 1;
+}
 @keyframes clickBlink {
  /* scale(0.85); Shrinks inward rapidly (the 'click' down) */
   0% {

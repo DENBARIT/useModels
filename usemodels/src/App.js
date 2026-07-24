@@ -1,53 +1,8 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
-import starRating from './startRating';
+import { useRef } from 'react';
+import {useLocalStorageState} from './CustomHooks/useLocalStorage';
 import StarRating from './startRating';
-const MOCK_MODELS = [
-  {
-    "id": "meta-llama/Meta-Llama-3-8B-Instruct",
-    "author": "meta-llama",
-    "gated": "auto",
-    "lastModified": "2024-04-18T12:34:56.000Z",
-    "likes": 4820,
-    "downloads": 1250340,
-    "pipeline_tag": "text-generation",
-    "library_name": "transformers",
-    "siblings": [
-      {"rpath": "README.md"},
-      {"rpath": "config.json"},
-      {"rpath": "model.safetensors"}
-    ]
-  },
-  {
-    "id": "black-forest-labs/FLUX.1-schnell",
-    "author": "black-forest-labs",
-    "gated": false,
-    "lastModified": "2024-08-01T09:15:22.000Z",
-    "likes": 3210,
-    "downloads": 890450,
-    "pipeline_tag": "text-to-image",
-    "library_name": "diffusers",
-    "siblings": [
-      {"rpath": "README.md"},
-      {"rpath": "flux1-schnell.safetensors"}
-    ]
-  },
-  {
-    "id": "openai/whisper-large-v3",
-    "author": "openai",
-    "gated": false,
-    "lastModified": "2023-11-05T16:40:00.000Z",
-    "likes": 1945,
-    "downloads": 620100,
-    "pipeline_tag": "automatic-speech-recognition",
-    "library_name": "transformers",
-    "siblings": [
-      {"rpath": "README.md"},
-      {"rpath": "config.json"},
-      {"rpath": "model.safetensors"}
-    ]
-  }
-];
 
 export default function App() {
   const [query,setQuery] = useState("");
@@ -56,7 +11,8 @@ export default function App() {
    const [debouncedQuery, setDebouncedQuery] = useState("");
    const [isLoading, setIsLoading] = useState(false);
    const [error, setError] = useState("");
-   const [favourite, setFavourite] = useState([]);
+  //  const [favourite, setFavourite] = useState([]);
+  const [favourite, setFavourite] = useLocalStorageState([], "favouriteModels");
     const [isOpen, setIsOpen] = useState(false);
   function handleSelectModel(id){
     if(id===selectedId){
@@ -123,11 +79,12 @@ return () => controller.abort();
   },[debouncedQuery])
   return <div>
     <Navbar >
-    <Search query={query} setQuery={setQuery} />
+    <Search query={query} setQuery={setQuery} onClose={handleClose} />
     <FoundResults  models={models}/>
    
     </Navbar>
     <Main>
+      <Contactcontainer1/> 
       <Box>
        {error && <p className="error">🚨{error}</p>}
 <Modellist models={models} onSelect={handleSelectModel} selectedId={selectedId} onClose={handleClose} />
@@ -159,12 +116,13 @@ function Logo(){
   <h1 className="logo-text">useModels</h1>
  </div>
 }
-function Search({query,setQuery}){
+function Search({query,setQuery,onClose}){
   
    const [placeholder, setPlaceholder] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [loopNum, setLoopNum] = useState(0);
   const [typingSpeed, setTypingSpeed] = useState(150);
+  const inputEl=useRef(null);
   const placeholders = [
     "Search for Llama-3",
     "Try 'Inception vibes'",
@@ -200,8 +158,24 @@ function Search({query,setQuery}){
     return () => clearTimeout(timer);
   }, [placeholder, isDeleting, loopNum, typingSpeed]);
   
-  
-  return <input className="search" type="text" placeholder={placeholder} value={query} onChange={(e) => setQuery(e.target.value)} />
+  useEffect(function(){
+inputEl.current.focus();
+function callback(e){
+  if(document.activeElement===inputEl.current)return;
+  if(e.key==="Enter"){
+    inputEl.current.focus();
+    setQuery("");
+    onClose()
+  }
+}
+
+document.addEventListener("keydown",callback);
+return function(){
+  document.removeEventListener("keydown",callback);
+}
+
+  },[setQuery,onClose])
+  return <input className="search" type="text" placeholder={placeholder} value={query} onChange={(e) => setQuery(e.target.value)} ref={inputEl} />
 }
 function FoundResults({models}){
   return <p className="found-results">Found {models.length} results</p>
@@ -251,14 +225,6 @@ function Model({model,onSelect,selectedId,onClose}) {
  
   const boxColor = stringToColor(modelName);
   const firstLetter = modelName ? modelName.charAt(0).toUpperCase() : "🤖";
- useEffect(function(){
-if(!modelName)return;
-document.title = `Model:${modelName}| useModels`;
-return function(){
-  document.title = "useModels";
-}
- },[modelName
- ]); 
  return <li onClick={()=>onSelect(model.id)}  className={`model-item ${selectedId === model.id ? "selected" : ""}`}>
     <div className="model-avatar" style={{ backgroundColor: boxColor }}>{firstLetter}</div>
     <h3 className="model-name">{modelName||model.id}</h3>
@@ -295,10 +261,10 @@ function ModelDetials({selectedId,favourite,setFavourite,onClose,isOpen,setIsOpe
   const [isLoading, setIsLoading] = useState(false);
   
 const [rating, setRating] = useState(0);
-const [isFavorite, setIsFavorite] = useState(false);
+// const [isFavorite, setIsFavorite] = useState(false);
 
 
-
+const Favouritemodel = favourite.some(model => model.id === selectedId);
 useEffect(function(){
 const controller = new AbortController();
 async function fetchModels(){
@@ -319,12 +285,18 @@ setIsLoading(false);
 console.log("Fetched model details:", data);
  }
 fetchModels();
-
-
-
-
+return () => controller.abort();
 },[selectedId]);
 const modelData=models.length>0? models[0]:null;
+const [author, modelName] = modelData?.id.includes("/") ? modelData.id.split("/") : ["Unknown", modelData?.id];
+
+useEffect(function(){
+if(!modelName)return;
+document.title = `Model:${modelName}| useModels`;
+return function(){
+  document.title = "useModels";
+}
+},[modelName]);
 
 if(isLoading){
   return <Loader />
@@ -332,8 +304,7 @@ if(isLoading){
 if(!modelData){
   return <p className="error">🚨Model not found</p>
 }
-const [author, modelName] = modelData?.id.includes("/") ? modelData.id.split("/") : ["Unknown", modelData?.id];
- 
+
   const boxColor = stringToColor(modelName);
   const firstLetter = modelName ? modelName.charAt(0).toUpperCase() : "🤖";
   const formattedDate = modelData.createdAt 
@@ -414,17 +385,20 @@ return <div>
           </div>
         )}
         <div className="rating-container">
-          <StarRating maxRating={10}  color="#6366f1" size="24" onSetRating={setRating} />
-          {rating>0 && (
-            <button
-              className={`btn-favorite ${isFavorite ? "is-favorite" : ""}`}
-              onClick={() => {
-                setIsFavorite((fav) => !fav);
-                AddToFavorites();
-              }}
-            >
-              {isFavorite ? "★ Added to Favorites" : "☆ Add to Favorites"}
-            </button>
+          {Favouritemodel ? (
+            <span className="already-favorite">★ Already in Favorites</span>
+          ) : (
+            <>
+              <StarRating maxRating={10}  color="#6366f1" size="24" onSetRating={setRating} />
+              {rating>0 && (
+                <button
+                  className="btn-favorite"
+                  onClick={AddToFavorites}
+                >
+                  ☆ Add to Favorites
+                </button>
+              )}
+            </>
           )}
         </div>
       </main></>)}
@@ -435,12 +409,12 @@ return <div>
 }
 function ModelSummaryBox({favourite}){
   const numberOfFavorites = favourite.length;
-  const mostlikedModel = favourite.reduce((max, model) => (model.likes > max.likes ? model : max), { likes: 0 });
+  const topRatedModel = favourite.reduce((max, model) => (model.rating > max.rating ? model : max), { rating: 0 });
   return <div className="model-summary-box">
     <h3>📊 Model Summary</h3>
     <p>Total Favourites: <span className="summary-highlight">{numberOfFavorites}</span></p>
     {numberOfFavorites > 0 && (
-      <p>Most Liked: <span className="summary-highlight">{mostlikedModel.modelName}</span> by {mostlikedModel.author} with {mostlikedModel.likes.toLocaleString()} ❤️</p>
+      <p>Top Rated: <span className="summary-highlight">{topRatedModel.modelName}</span> by {topRatedModel.author} {topRatedModel.rating}/10</p>
     )}
   </div>;
 
@@ -463,11 +437,21 @@ function ModelSummary({favourite}){
               <div className="model-avatar" style={{ backgroundColor: model.boxColor }}>
                 {model.firstLetter}
               </div>
-              <div>
+              <div className="favourite-item-info">
                 <h4>{model.modelName}</h4>
                 <span className="author-tag">By {model.author}</span>
-                <span className="rating-tag">★ {model.rating}/10</span>
+
               </div>
+              <span className="rating-tag">★ {model.rating}/10</span>
+                 <span className="file-link"><a 
+    href={`https://huggingface.co/${model.id}/tree/main`}
+    target="_blank" 
+    rel="noopener noreferrer" 
+    style={{fontSize:"1.8rem"}} 
+    title="Open files on Hugging Face"
+  >
+    🔗
+  </a></span>
             </li>
           ))}
         </ul>
