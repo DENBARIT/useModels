@@ -335,6 +335,50 @@ padding: 1.2rem 2.4rem 1.2rem 2.1rem;
   border-radius: 999px;
   padding: 0.4rem 1.2rem;
 }
+.rating-container{
+  display: flex;
+  flex-direction: column;
+  gap:0.6rem;
+  align-items: center;
+  margin-top: 1.6rem;
+  padding: 1rem 1.4rem;
+  background-color: rgba(99, 102, 241, 0.08);
+  border: 1px solid rgba(99, 102, 241, 0.25);
+  border-radius: 1rem;
+
+}
+.btn-favorite{
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  font-family: 'Quicksand', sans-serif;
+  font-weight: 600;
+  font-size: 1.4rem;
+  color: #fff;
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-glow));
+  border: none;
+  padding: 0.9rem 1.8rem;
+  border-radius: 999px;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.35);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.25s ease;
+  animation: popIn 0.25s ease;
+}
+.btn-favorite:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(99, 102, 241, 0.5);
+}
+.btn-favorite:active{
+  transform: translateY(0) scale(0.96);
+}
+.btn-favorite.is-favorite{
+  background: linear-gradient(135deg, #f59e0b, #fbbf24);
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35);
+}
+.btn-favorite.is-favorite:hover{
+  box-shadow: 0 6px 16px rgba(245, 158, 11, 0.5);
+}
+
 @keyframes clickBlink {
  /* scale(0.85); Shrinks inward rapidly (the 'click' down) */
   0% {
@@ -355,6 +399,16 @@ padding: 1.2rem 2.4rem 1.2rem 2.1rem;
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+@keyframes popIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
   }
 }
 @keyframes spin {
