@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import "../cssfiles/LandingScreen.css";
 
 const TAGLINE = "Different LLM models... Search on useModel, rate it, get the right download link, add your favorite models.";
-const TYPING_SPEED = 150;
+const TYPING_SPEED = 80;
 const HOLD_AFTER_FINISH = 700;
 const FADE_DURATION = 500;
 
