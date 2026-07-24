@@ -251,7 +251,7 @@ padding: 1.2rem 2.4rem 1.2rem 2.1rem;
   height: 6rem;
   font-size: 2.8rem;
   flex-shrink: 0;
-}
+} 
 .model-header h2{
   font-family: 'Quicksand', sans-serif;
   font-weight: 700;
@@ -539,6 +539,50 @@ padding: 1.2rem 2.4rem 1.2rem 2.1rem;
 }
 .file-link{
   line-height: 1;
+}
+.footer{
+  margin-top: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  padding: 0rem 1.6rem 0rem;
+  border-top: 1px solid #1e293b;
+  background-color:#818cf8;
+}
+.footer .logo-image{
+  height: 8.4rem;
+  width: auto;
+  object-fit: contain;
+}
+.contact-email a{
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.3rem;
+  color: var(--bg-main);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+.contact-email a:hover{
+  color: var(--primary-color);
+}
+.email-logo{
+  display: flex;
+  font-size: 1.8rem;
+  line-height: 1;
+}
+.social-link{
+  display: flex;
+  align-items: center;
+  font-size: 2rem;
+  color: var(--bg-main);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+.social-link:hover{
+  color: var(--primary-color);
+  transform: translateY(-2px);
 }
 @keyframes clickBlink {
  /* scale(0.85); Shrinks inward rapidly (the 'click' down) */

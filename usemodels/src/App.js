@@ -4,8 +4,12 @@ import { useRef } from 'react';
 import {useLocalStorageState} from './CustomHooks/useLocalStorage';
 import StarRating from './startRating';
 import logo from "./assets/logo.svg";
-
+import { FaGithub, FaLinkedin } from "react-icons/fa";
+import { MdEmail } from "react-icons/md";
+import { useKey } from './CustomHooks/useKey';
+import LandingScreen from './Components/LandingScreen';
 export default function App() {
+  const [showLanding, setShowLanding] = useState(true);
   const [query,setQuery] = useState("");
    const [models, setModels] = useState([]); 
   const [selectedId, setSelectedId] = useState(null);
@@ -79,13 +83,13 @@ if(err.name === 'AbortError'){
 return () => controller.abort();
   },[debouncedQuery])
   return <div>
+    {showLanding && <LandingScreen onFinish={() => setShowLanding(false)} />}
     <Navbar >
     <Search query={query} setQuery={setQuery} onClose={handleClose} />
     <FoundResults  models={models}/>
    
     </Navbar>
     <Main>
-      <ContactContainer1/> 
       <Box>
        {error && <p className="error">🚨{error}</p>}
 <Modellist models={models} onSelect={handleSelectModel} selectedId={selectedId} onClose={handleClose} />
@@ -100,7 +104,7 @@ return () => controller.abort();
         }
       </Box>
     </Main>
-
+<Footer/>
   </div>  
 }
 function Navbar({children}) {
@@ -117,11 +121,7 @@ function Logo(){
   <h1 className="logo-text">useModels</h1>
  </div>
 }
-function ContactContainer1(){
-  return <div>
-    <image src={logo} alt="useModels Logo" className="logo-image" />
-  </div>
-}
+
 function Search({query,setQuery,onClose}){
   
    const [placeholder, setPlaceholder] = useState("");
@@ -135,6 +135,8 @@ function Search({query,setQuery,onClose}){
     "Search 'Sci-Fi summarizer'",
     "Try 'Whisper audio tracker'"
   ];
+  useKey("escape",onClose);
+
  useEffect(() => {
     const i = loopNum % placeholders.length;
     const fullText = placeholders[i];
@@ -174,6 +176,7 @@ function callback(e){
     onClose()
   }
 }
+
 
 document.addEventListener("keydown",callback);
 return function(){
@@ -469,4 +472,21 @@ function ModelSummary({favourite}){
 
   </div>;
   
+}
+function Footer(){
+  return <footer className="footer">
+    <img src={logo} alt="Denbarit technologies Logo" className="logo-image" />
+    <span className="contact-email">
+      <a href="mailto:leulethiopia05@gmail.com">
+        <span className="email-logo" role="img" aria-label="Email"><MdEmail /></span>
+        leulethiopia05@gmail.com
+      </a>
+    </span>
+    <a className="social-link" href="https://www.linkedin.com/in/leul-gebremariam-930810354" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+      <FaLinkedin />
+    </a>
+    <a className="social-link" href="https://github.com/DENBARIT/useModels" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+      <FaGithub />
+    </a>
+    </footer>
 }
