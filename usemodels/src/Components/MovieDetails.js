@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import StarRating from "../startRating";
+import StarRating from "./startRating";
 import Loader from "./Loader";
 import ListedBoxButton from "./ListedBoxButton";
 import { stringToColor } from "../utils/stringToColor";
@@ -16,7 +16,7 @@ const Favouritemodel = favourite.some(model => model.id === selectedId);
 useEffect(function(){
 const controller = new AbortController();
 async function fetchModels(){
-  setIsLoading(true);
+  try{setIsLoading(true);
   
   const url= `https://huggingface.co/api/models?search=${encodeURIComponent(selectedId)}&limit=1`;
 const response = await fetch(url,
@@ -28,10 +28,13 @@ const response = await fetch(url,
   });
 
   const data = await response.json();
-setModels(data);
-setIsLoading(false); 
-console.log("Fetched model details:", data);
- }
+setModels(data);}
+catch(error){
+  if(error.name==="AbortError")return;
+  console.error("Error fetching model details:", error);
+  setIsLoading(false);
+}
+}
 fetchModels();
 return () => controller.abort();
 },[selectedId]);
@@ -114,13 +117,11 @@ return <div>
             <span className="value"> {modelData.trendingScore || 0}</span>
           </div>
         
-   {/* Metadata Details */}
        
           <p className="model-description"><strong>🔀 Pipeline Tag:</strong> {modelData.pipeline_tag || "none"}</p>
           <p className="model-description"><strong>📦 Library:</strong> {modelData.library_name || "Unknown"}</p>
           <p className="model-description"><strong> 📅 Created At:</strong> {formattedDate}</p>
         
-        {/* Dynamic Tag Pills list */}
        <h3>🗂️ Tags</h3>  
        {modelData.tags && modelData.tags.length > 0 && (
           <div className="tags-container">
