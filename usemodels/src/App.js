@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import { useRef } from 'react';
 import {useLocalStorageState} from './CustomHooks/useLocalStorage';
 import StarRating from './startRating';
+import logo from "./assets/logo.svg";
 
 export default function App() {
   const [query,setQuery] = useState("");
@@ -84,7 +85,7 @@ return () => controller.abort();
    
     </Navbar>
     <Main>
-      <Contactcontainer1/> 
+      <ContactContainer1/> 
       <Box>
        {error && <p className="error">🚨{error}</p>}
 <Modellist models={models} onSelect={handleSelectModel} selectedId={selectedId} onClose={handleClose} />
@@ -115,6 +116,11 @@ function Logo(){
 <span className="logo-emoji">🤖</span>
   <h1 className="logo-text">useModels</h1>
  </div>
+}
+function ContactContainer1(){
+  return <div>
+    <image src={logo} alt="useModels Logo" className="logo-image" />
+  </div>
 }
 function Search({query,setQuery,onClose}){
   
