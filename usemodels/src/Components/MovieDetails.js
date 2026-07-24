@@ -7,7 +7,7 @@ import { stringToColor } from "../utils/stringToColor";
 export default function ModelDetials({selectedId,favourite,setFavourite,onClose,isOpen,setIsOpen}){
   const [models,setModels] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  
+
 const [rating, setRating] = useState(0);
 // const [isFavorite, setIsFavorite] = useState(false);
 
@@ -16,8 +16,8 @@ const Favouritemodel = favourite.some(model => model.id === selectedId);
 useEffect(function(){
 const controller = new AbortController();
 async function fetchModels(){
-  try{setIsLoading(true);
-  
+  try{
+  setIsLoading(true);
   const url= `https://huggingface.co/api/models?search=${encodeURIComponent(selectedId)}&limit=1`;
 const response = await fetch(url,
   {signal: controller.signal,
@@ -26,13 +26,15 @@ const response = await fetch(url,
       Authorization: `Bearer ${process.env.REACT_APP_HUGGINGFACE_API_KEY}`
     }
   });
-
+if(!response.ok){
+  throw new Error(`Hugging Face API error: ${response.status} ${response.statusText}`);
+}
   const data = await response.json();
 setModels(data);}
 catch(error){
   if(error.name==="AbortError")return;
   console.error("Error fetching model details:", error);
-  setIsLoading(false);
+  setModels([]);
 }finally {
     setIsLoading(false);
 }
@@ -54,6 +56,7 @@ return function(){
 if(isLoading){
   return <Loader />
 }
+
 if(!modelData){
   return <p className="error">🚨Model not found</p>
 }

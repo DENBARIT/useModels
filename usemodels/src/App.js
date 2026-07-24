@@ -96,10 +96,10 @@ return () => controller.abort();
     <Main>
       <Box>
        {error && <p className="error">🚨{error}</p>}
-       {isLoading ? <Loader /> : <Modellist models={models} onSelect={handleSelectModel} selectedId={selectedId} onClose={handleClose} />}
+       {isLoading ? <Loader /> : !error && <Modellist models={models} onSelect={handleSelectModel} selectedId={selectedId} onClose={handleClose} />}
       </Box>
       <Box>
-{selectedId&&isOpen ? <ModelDetials  selectedId={selectedId}  favourite={favourite} setFavourite={handleFavourite} onClose={handleClose} isOpen={isOpen} setIsOpen={setIsOpen}/>
+{selectedId&&isOpen  ? <ModelDetials  selectedId={selectedId}  favourite={favourite} setFavourite={handleFavourite} onClose={handleClose} isOpen={isOpen} setIsOpen={setIsOpen}/>
         :
         <>
         <ModelSummaryBox favourite={favourite} />
