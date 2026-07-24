@@ -31,6 +31,9 @@ export default function App() {
   function handleFavourite(newModel){
   setFavourite((prev) => [...prev, newModel]);
   }
+  function handleRemoveFavourite(id){
+  setFavourite((prev) => prev.filter((model) => model.id !== id));
+  }
   console.log("Favourite models:", favourite);
   
   function handleClose(id){
@@ -100,7 +103,7 @@ return () => controller.abort();
         :
         <>
         <ModelSummaryBox favourite={favourite} />
-        <ModelSummary  favourite={favourite} />
+        <ModelSummary  favourite={favourite} onRemove={handleRemoveFavourite} />
         </>
         }
       </Box>
@@ -191,7 +194,7 @@ function ModelSummaryBox({favourite}){
 
 
 }
-function ModelSummary({favourite}){
+function ModelSummary({favourite,onRemove}){
   return <div className="model-summary">
 
 <span className="logo-emoji summary-emoji">🤖</span>
@@ -214,15 +217,23 @@ function ModelSummary({favourite}){
 
               </div>
               <span className="rating-tag">★ {model.rating}/10</span>
-                 <span className="file-link"><a 
+                 <span className="file-link"><a
     href={`https://huggingface.co/${model.id}/tree/main`}
-    target="_blank" 
-    rel="noopener noreferrer" 
-    style={{fontSize:"1.8rem"}} 
+    target="_blank"
+    rel="noopener noreferrer"
+    style={{fontSize:"1.8rem"}}
     title="Open files on Hugging Face"
   >
     🔗
   </a></span>
+              <button
+                className="btn-remove-favorite"
+                onClick={() => onRemove(model.id)}
+                title="Remove from favorites"
+                aria-label={`Remove ${model.modelName} from favorites`}
+              >
+                ✕
+              </button>
             </li>
           ))}
         </ul>

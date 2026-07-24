@@ -477,7 +477,7 @@ padding: 1.2rem 2.4rem 1.2rem 2.1rem;
 }
 .favourite-item{
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  grid-template-columns: auto 1fr auto auto auto;
   align-items: center;
   gap: 1.2rem;
   padding: 1rem 1.4rem;
@@ -539,6 +539,27 @@ padding: 1.2rem 2.4rem 1.2rem 2.1rem;
 }
 .file-link{
   line-height: 1;
+}
+.btn-remove-favorite{
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border: 1px solid #1e293b;
+  border-radius: 50%;
+  background-color: transparent;
+  color: var(--text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+}
+.btn-remove-favorite:hover{
+  background-color: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.4);
+  color: #ef4444;
 }
 .footer{
   margin-top: 2.4rem;
