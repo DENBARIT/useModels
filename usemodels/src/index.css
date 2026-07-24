@@ -127,6 +127,23 @@ overflow-y: auto;
 flex */
 flex:1;
 }
+.model-details-card{
+  position: relative;
+}
+.btn-toggle{
+  position: absolute;
+  top: 1.2rem;
+  right: 1.2rem;
+  background-color: var(--bg-card);
+  border: 1px solid var(--primary-color);
+  color: var(--primary-color);
+  font-size: 2rem;
+  width: 3.6rem;
+  height: 3.6rem;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: 1.2rem;
+}
 .list{
   list-style: none;
 padding: 0.8rem 0;

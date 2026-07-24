@@ -107,7 +107,7 @@ return () => controller.abort();
   return <div>
     <Navbar >
     <Search query={query} setQuery={setQuery} />
-    <FoundResults/>
+    <FoundResults  models={models}/>
    
     </Navbar>
     <Main>
@@ -181,8 +181,8 @@ function Search({query,setQuery}){
   
   return <input className="search" type="text" placeholder={placeholder} value={query} onChange={(e) => setQuery(e.target.value)} />
 }
-function FoundResults(){
-  return <p className="found-results">Found X results</p>
+function FoundResults({models}){
+  return <p className="found-results">Found {models.length} results</p>
 
 }
 
@@ -204,6 +204,13 @@ function Box({children}){
     {children}
 
   </div>
+}
+function ListedBoxButton({ isOpen, setIsOpen }) {
+  return (
+    <button className="btn-toggle" onClick={() => setIsOpen((open) => !open)}>
+      {isOpen ? "–" : "+"}
+    </button>
+  );
 }
 function Modellist({models,onSelect,selectedId}){
   return <ul  className="list modellist">
@@ -264,7 +271,7 @@ function stringToColor(str) {
 function ModelDetials({selectedId}){
   const [models,setModels] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-   
+   const [isOpen, setIsOpen] = useState(true);
 
 
 useEffect(function(){
@@ -310,7 +317,10 @@ const [author, modelName] = modelData?.id.includes("/") ? modelData.id.split("/"
 
 return <div>
 {isLoading && <Loader /> }
+ 
 <div className="model-details-card">
+  <ListedBoxButton isOpen={isOpen} setIsOpen={setIsOpen} />
+  {isOpen && (<>
       <header className="model-header">
         <div className="model-avatar" style={{ backgroundColor: boxColor }}>
           {firstLetter}
@@ -320,11 +330,11 @@ return <div>
           <h2>{modelName}</h2>  <span className="author-tag">By {author}</span>
           {modelData.private && <span className="badge private">Private</span>}
         </div>
-        <span><a 
-    href={`https://huggingface.co{modelData.id}/tree/main`} 
+        <span ><a 
+    href={`https://huggingface.co/${modelData.id}/tree/main`}
     target="_blank" 
     rel="noopener noreferrer" 
-    style={{ marginLeft: '6px', textDecoration: 'none' }}
+    style={{fontSize:"1.8rem"}} 
     title="Open files on Hugging Face"
   >
     🔗
@@ -364,10 +374,10 @@ return <div>
             </div>
           </div>
         )}
-      </main>
+      </main></>)}
     </div>
   </div>
-
+      
 
 }
 
